@@ -5,6 +5,8 @@
 *.war
 *.ear
 
+hostkey.ser
+
 # Eclipse files #
 .classpath
 .project
