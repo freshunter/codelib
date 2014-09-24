@@ -1,4 +1,4 @@
-package com.calix.netconf.server;
+package com.kkk.netconf.server;
 
 import java.net.URI;
 import java.util.List;
@@ -22,8 +22,8 @@ import net.i2cat.netconf.rpc.ReplyFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.calix.netconf.server.Behaviour;
-import com.calix.netconf.server.Server;
+import com.kkk.netconf.server.Behaviour;
+import com.kkk.netconf.server.Server;
 
 /**
  * Unit Tests for {@link Server}

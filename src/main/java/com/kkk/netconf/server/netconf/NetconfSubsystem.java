@@ -1,4 +1,4 @@
-package com.calix.netconf.server.netconf;
+package com.kkk.netconf.server.netconf;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,8 +13,8 @@ import org.apache.sshd.server.ExitCallback;
 import org.apache.sshd.server.SessionAware;
 import org.apache.sshd.server.session.ServerSession;
 
-import com.calix.netconf.server.BehaviourContainer;
-import com.calix.netconf.server.MessageStore;
+import com.kkk.netconf.server.BehaviourContainer;
+import com.kkk.netconf.server.MessageStore;
 
 /**
  * Netconf Subsystem

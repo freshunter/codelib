@@ -1,4 +1,4 @@
-package com.calix.netconf.server.ssh;
+package com.kkk.netconf.server.ssh;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.sshd.ClientChannel;
 import org.apache.sshd.client.future.OpenFuture;
 import org.apache.sshd.common.Closeable;
@@ -27,8 +29,11 @@ import org.apache.sshd.common.util.Buffer;
 import org.apache.sshd.common.util.CloseableUtils;
 import org.apache.sshd.common.util.Readable;
 
+import com.kkk.netconf.server.netconf.NetconfProcessor;
+
 public class CalixTcpipForwarder extends CloseableUtils.AbstractInnerCloseable implements TcpipForwarder, IoHandler {
 
+//	private static final Log log = LogFactory.getLog(CalixTcpipForwarder.class);
     private final ConnectionService service;
     private final Session session;
     private final Map<Integer, SshdSocketAddress> localToRemote = new HashMap<Integer, SshdSocketAddress>();
@@ -61,12 +66,14 @@ public class CalixTcpipForwarder extends CloseableUtils.AbstractInnerCloseable i
         if (isClosing()) {
             throw new IllegalStateException("TcpipForwarder is closing");
         }
+        log.info("start local port forwarding:" + local.toString() + " remote:" + remote.toString());
         SshdSocketAddress bound = doBind(local);
         localToRemote.put(bound.getPort(), remote);
         return bound;
     }
 
     public synchronized void stopLocalPortForwarding(SshdSocketAddress local) throws IOException {
+        log.info("stop local port forwarding:" + local.toString());
         if (localToRemote.remove(local.getPort()) != null && acceptor != null) {
             acceptor.unbind(local.toInetSocketAddress());
             if (acceptor.getBoundAddresses().isEmpty()) {
@@ -76,6 +83,7 @@ public class CalixTcpipForwarder extends CloseableUtils.AbstractInnerCloseable i
     }
 
     public synchronized SshdSocketAddress startRemotePortForwarding(SshdSocketAddress remote, SshdSocketAddress local) throws IOException {
+        log.info("start remote port forwarding:" + local.toString() + " remote:" + remote.toString());
         Buffer buffer = session.createBuffer(SshConstants.SSH_MSG_GLOBAL_REQUEST);
         buffer.putString("tcpip-forward");
         buffer.putBoolean(true);
@@ -92,6 +100,7 @@ public class CalixTcpipForwarder extends CloseableUtils.AbstractInnerCloseable i
     }
 
     public synchronized void stopRemotePortForwarding(SshdSocketAddress remote) throws IOException {
+        log.info("stop remote port forwarding: remote:" + remote.toString());
         if (remoteToLocal.remove(remote.getPort()) != null) {
             Buffer buffer = session.createBuffer(SshConstants.SSH_MSG_GLOBAL_REQUEST);
             buffer.putString("cancel-tcpip-forward");
@@ -151,6 +160,7 @@ public class CalixTcpipForwarder extends CloseableUtils.AbstractInnerCloseable i
         if (localToRemote.containsKey(localPort)) {
             SshdSocketAddress remote = localToRemote.get(localPort);
             channel = new TcpipClientChannel(TcpipClientChannel.Type.Direct, session, remote);
+            log.info("===========try to create direct-tcpip channel");
         } else {
             channel = new TcpipClientChannel(TcpipClientChannel.Type.Forwarded, session, null);
         }

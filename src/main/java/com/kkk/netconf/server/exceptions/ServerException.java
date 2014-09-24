@@ -1,4 +1,4 @@
-package com.calix.netconf.server.exceptions;
+package com.kkk.netconf.server.exceptions;
 
 /**
  * Generic Server exception to encapsulate runtime errors

@@ -1,4 +1,4 @@
-package com.calix.netconf.server.netconf;
+package com.kkk.netconf.server.netconf;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,10 +31,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.calix.netconf.server.Behaviour;
-import com.calix.netconf.server.BehaviourContainer;
-import com.calix.netconf.server.MessageStore;
-import com.calix.netconf.server.transport.ServerTransportContentParser;
+import com.kkk.netconf.server.Behaviour;
+import com.kkk.netconf.server.BehaviourContainer;
+import com.kkk.netconf.server.MessageStore;
+import com.kkk.netconf.server.transport.ServerTransportContentParser;
 
 /**
  * Netconf client processor

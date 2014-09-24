@@ -1,4 +1,4 @@
-package com.calix.netconf.server;
+package com.kkk.netconf.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,10 +24,10 @@ import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerConnectionService;
 import org.apache.sshd.server.session.ServerUserAuthService;
 
-import com.calix.netconf.server.exceptions.ServerException;
-import com.calix.netconf.server.netconf.NetconfSubsystem;
-import com.calix.netconf.server.ssh.AlwaysTruePasswordAuthenticator;
-import com.calix.netconf.server.ssh.CalixTcpipForwarderFactory;
+import com.kkk.netconf.server.exceptions.ServerException;
+import com.kkk.netconf.server.netconf.NetconfSubsystem;
+import com.kkk.netconf.server.ssh.AlwaysTruePasswordAuthenticator;
+import com.kkk.netconf.server.ssh.CalixTcpipForwarderFactory;
 
 /**
  * Netconf server class allowing to create a test Netconf server with the ability of:
@@ -174,6 +174,7 @@ public class Server implements MessageStore, BehaviourContainer {
 
             public boolean canConnect(SshdSocketAddress address, Session session) {
         		log.info("canConnect.=====================.");
+        		log.info("direct tcpip..=====================");
                 return true;
             }
         });
