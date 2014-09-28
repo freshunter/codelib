@@ -13,6 +13,7 @@ import net.i2cat.netconf.rpc.RPCElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.sshd.SshServer;
+import org.apache.sshd.common.Channel;
 import org.apache.sshd.common.ForwardingFilter;
 import org.apache.sshd.common.NamedFactory;
 import org.apache.sshd.common.Service;
@@ -20,6 +21,7 @@ import org.apache.sshd.common.Session;
 import org.apache.sshd.common.SshdSocketAddress;
 import org.apache.sshd.common.util.Buffer;
 import org.apache.sshd.server.Command;
+import org.apache.sshd.server.channel.ChannelSession;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerConnectionService;
 import org.apache.sshd.server.session.ServerUserAuthService;
@@ -27,7 +29,8 @@ import org.apache.sshd.server.session.ServerUserAuthService;
 import com.kkk.netconf.server.exceptions.ServerException;
 import com.kkk.netconf.server.netconf.NetconfSubsystem;
 import com.kkk.netconf.server.ssh.AlwaysTruePasswordAuthenticator;
-import com.kkk.netconf.server.ssh.CalixTcpipForwarderFactory;
+import com.kkk.netconf.server.ssh.CTcpipServerChannel;
+import com.kkk.netconf.server.ssh.CTcpipForwarderFactory;
 
 /**
  * Netconf server class allowing to create a test Netconf server with the ability of:
@@ -147,7 +150,7 @@ public class Server implements MessageStore, BehaviourContainer {
                         return new ServerUserAuthService(session) {
                             @Override
                             public void process(byte cmd, Buffer buffer) throws Exception {
-                            	log.info(cmd + " buffer "+ buffer.toString());
+//                            	log.info(cmd + " buffer "+ buffer.toString());
                                 super.process(cmd, buffer);
                             }
                         };
@@ -179,7 +182,11 @@ public class Server implements MessageStore, BehaviourContainer {
             }
         });
 		
-		sshd.setTcpipForwarderFactory(new CalixTcpipForwarderFactory());
+		sshd.setChannelFactories(Arrays.<NamedFactory<Channel>>asList(
+                new ChannelSession.Factory(),
+                new CTcpipServerChannel.DirectTcpipFactory()));
+		
+		sshd.setTcpipForwarderFactory(new CTcpipForwarderFactory());
 
 		log.info("Server configured.");
 	}

@@ -31,7 +31,7 @@ import org.apache.sshd.common.util.Readable;
 
 import com.kkk.netconf.server.netconf.NetconfProcessor;
 
-public class CalixTcpipForwarder extends CloseableUtils.AbstractInnerCloseable implements TcpipForwarder, IoHandler {
+public class CTcpipForwarder extends CloseableUtils.AbstractInnerCloseable implements TcpipForwarder, IoHandler {
 
 //	private static final Log log = LogFactory.getLog(CalixTcpipForwarder.class);
     private final ConnectionService service;
@@ -41,7 +41,7 @@ public class CalixTcpipForwarder extends CloseableUtils.AbstractInnerCloseable i
     private final Set<SshdSocketAddress> localForwards = new HashSet<SshdSocketAddress>();
     protected IoAcceptor acceptor;
 
-    public CalixTcpipForwarder(ConnectionService service) {
+    public CTcpipForwarder(ConnectionService service) {
         this.service = service;
         this.session = service.getSession();
     }
@@ -170,7 +170,7 @@ public class CalixTcpipForwarder extends CloseableUtils.AbstractInnerCloseable i
             public void operationComplete(OpenFuture future) {
                 Throwable t = future.getException();
                 if (t != null) {
-                    CalixTcpipForwarder.this.service.unregisterChannel(channel);
+                    CTcpipForwarder.this.service.unregisterChannel(channel);
                     channel.close(false);
                 }
             }

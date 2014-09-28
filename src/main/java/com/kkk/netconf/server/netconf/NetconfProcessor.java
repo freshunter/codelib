@@ -59,6 +59,14 @@ public class NetconfProcessor implements Runnable, MessageQueueListener {
 
 	// client streams
 	private InputStream						in;
+	public InputStream getIn() {
+		return in;
+	}
+
+	public OutputStream getOut() {
+		return out;
+	}
+
 	private OutputStream					out;
 	private OutputStream					err;
 
@@ -173,7 +181,7 @@ public class NetconfProcessor implements Runnable, MessageQueueListener {
 		}
 	}
 
-	private void process(final String message) throws IOException, SAXException {
+	public void process(final String message) throws IOException, SAXException {
 		log.debug("Starting parser..");
 		try {
 			log.trace("Parsing message:\n" + message);
@@ -198,7 +206,7 @@ public class NetconfProcessor implements Runnable, MessageQueueListener {
 
 	private void sendHello() throws IOException {
 		// create a server hello message
-		CalixHello serverHello = new CalixHello();
+/**		CalixHello serverHello = new CalixHello();
 		// generate a random session ID
 		serverHello.setSessionId(sessionId);
 
@@ -211,7 +219,7 @@ public class NetconfProcessor implements Runnable, MessageQueueListener {
 		capabilities.add(new CalixCapability("http://calix.com/e7-2/2.3/admin"));
 		serverHello.setCapabilities(capabilities);
 		CompositeConfiguration ctx = new CompositeConfiguration();
-
+*/
 //		ctx.addProperty("session-id", sessionId);
 //		ctx.addProperty("session-timeout", 1860);
 //		ctx.addProperty("request-timeout", 20);
@@ -223,7 +231,7 @@ public class NetconfProcessor implements Runnable, MessageQueueListener {
 //		ctx.addConfiguration(cc);
 //		serverHello.setCtx(	ctx);
 
-		send(serverHello.toXML());
+		send(CalixHello.genHello(sessionId).toXML());
 	}
 
 	public void sendFakeConfig(Query configQuery) throws IOException {
@@ -253,7 +261,7 @@ public class NetconfProcessor implements Runnable, MessageQueueListener {
 		send(reply.toXML());
 	}
 
-	private void send(String xmlMessage) throws IOException {
+	public void send(String xmlMessage) throws IOException {
 		log.trace("Sending message:\n" + xmlMessage);
 		out.write(xmlMessage.getBytes("UTF-8"));
 		// send final sequence
@@ -290,6 +298,10 @@ public class NetconfProcessor implements Runnable, MessageQueueListener {
 				while (status.getIndex() < Status.SESSION_CLOSED.getIndex()) {
 
 					RPCElement message = messageQueue.blockingConsume();
+					
+					if(message == null) {
+						continue;
+					}
 
 					log.trace("Message body:\n" + message.toXML() + '\n');
 

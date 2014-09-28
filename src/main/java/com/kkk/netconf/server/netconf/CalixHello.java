@@ -22,22 +22,22 @@ public class CalixHello extends RPCElement {
 
 	public String toXML() {
 
-		String xml = "<hello xmlns=\"" + Capability.BASE + "\">";
+		String xml = "<hello length=\"000530\" xmlns=\"" + Capability.BASE + "\">";
 
-		xml += "\t<capabilities>";
+		xml += "<capabilities>";
 
 		for (Capability capability : capabilities) {
-			xml += "\t\t<capability>" + capability + "</capability>";
+			xml += "<capability>" + capability + "</capability>";
 		}
 
-		xml += "\t</capabilities>";
+		xml += "</capabilities>";
 
 		if (sessionId != null)
-			xml += "\t<session-id>" + sessionId + "</session-id>";
+			xml += "<session-id>" + sessionId + "</session-id>";
 
 //		<session-timeout>1860</session-timeout>
 //		<request-timeout>20</request-timeout>
-		xml += "\t<session-timeout>1860</session-timeout><request-timeout>20</request-timeout>";
+		xml += "<session-timeout>1860</session-timeout><request-timeout>20</request-timeout>";
 
 		xml += "</hello>";
 
@@ -58,5 +58,21 @@ public class CalixHello extends RPCElement {
 
 	public void setSessionId(String sessionId) {
 		this.sessionId = sessionId;
+	}
+	
+	public static CalixHello genHello(String sessionId) {
+		CalixHello serverHello = new CalixHello();
+		// generate a random session ID
+		serverHello.setSessionId(sessionId);
+
+		// add only base capability
+		ArrayList<Capability> capabilities = new ArrayList<Capability>();
+		capabilities.add(Capability.BASE);
+		capabilities.add(Capability.WRITABLE_RUNNING);
+		capabilities.add(new CalixCapability("http://calix.com/e7-2/2.3/config"));
+		capabilities.add(new CalixCapability("http://calix.com/e7-2/2.3/stats"));
+		capabilities.add(new CalixCapability("http://calix.com/e7-2/2.3/admin"));
+		serverHello.setCapabilities(capabilities);
+		return serverHello;
 	}
 }
