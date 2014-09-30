@@ -3,8 +3,8 @@ package com.kkk.netconf.client.simtest;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -16,6 +16,7 @@ public class SimClientHandler extends IoHandlerAdapter {
     private Charset charset = Charset.forName("UTF-8");
     private CharsetEncoder charsetEncoder = charset.newEncoder();  
     private CharsetDecoder charsetDecoder = charset.newDecoder();
+    private static AtomicInteger ai = new AtomicInteger();
 
     public SimClientHandler() {
     }
@@ -61,12 +62,19 @@ public class SimClientHandler extends IoHandlerAdapter {
 //	sent.flip();
 //	session.write(sent);
 
-	log.info("******received msg: " + message.toString());		
+//	log.info("******received msg: " + message.toString());
+	ai.getAndIncrement();
+	if(ai.get() > 5) {
+	    throw new Exception("exit");
+	}
+	
 	session.write(message.toString());
+
+	
     }
     
     @Override
     public void messageSent(IoSession session, Object message) throws Exception {
-	log.info("******sent data: " + message.toString());
+//	log.info("******sent data: " + message.toString());
     }
 }

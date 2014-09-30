@@ -168,7 +168,7 @@ public class Server implements MessageStore, BehaviourContainer {
 
 	private void initializeNetconfServer(int listeningPort) {
 		NioSocketAcceptor acceptor = new NioSocketAcceptor();
-		TextLineCodecFactory lineCodec = new TextLineCodecFactory(charset, " ",  
+		TextLineCodecFactory lineCodec = new TextLineCodecFactory(charset, LINE_DELIMITER,  
 			LINE_DELIMITER);
 	        lineCodec.setDecoderMaxLineLength(2*1024*1024);  
 	        lineCodec.setEncoderMaxLineLength(2*1024*1024);  
