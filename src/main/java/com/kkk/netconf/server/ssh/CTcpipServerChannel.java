@@ -120,7 +120,7 @@ public class CTcpipServerChannel<K>  extends AbstractServerChannel {
                     Buffer buffer = new Buffer();
                     buffer.putBuffer(message);
 //                    log.info("======receive message from Netconf sim byte:" + buffer.array());
-                    log.info("======Southbound. Received message from Netconf sim string:" + new String(buffer.getCompactData()));
+                    log.info("======sshSouthbound:" + new String(buffer.getCompactData()));
 
                     out.write(buffer.array(), buffer.rpos(), buffer.available());
                     out.flush();
@@ -175,15 +175,19 @@ public class CTcpipServerChannel<K>  extends AbstractServerChannel {
         if (len < 0 || len > Buffer.MAX_LEN) {
             throw new IllegalStateException("Bad item length: " + len);
         }
-        log.debug("=====Received SSH_MSG_CHANNEL_DATA on channel {}", this);
+        log.debug("Received SSH_MSG_CHANNEL_DATA on channel {}", this);
 //        log.debug("=====Received channel data: {}", BufferUtils.printHex(buffer.array(), buffer.rpos(), len));
 //        log.info("======Received data:" + new String(buffer.array()));
-        log.info("======Northbound. Received data from ssh client:" + new String(buffer.getCompactData()));
+        log.info("======sshNorthbound:" + new String(buffer.getCompactData()));
 //        log.info("======Received data:" + buffer.getString());
         if (log.isTraceEnabled()) {
             log.trace("Received channel data: {}", BufferUtils.printHex(buffer.array(), buffer.rpos(), len));
         }
         doWriteData(buffer.array(), buffer.rpos(), len);
+        
+        //send a end delimiter, then make sure sim server could get the whole msg once.
+        byte[] end = Server.LINE_DELIMITER.getBytes(Server.charset);
+        doWriteData(end, 0, end.length);
     }
 
     private void closeImmediately0() {

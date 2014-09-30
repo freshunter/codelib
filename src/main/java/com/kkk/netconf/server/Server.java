@@ -14,7 +14,14 @@ import net.i2cat.netconf.rpc.RPCElement;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.mina.core.buffer.IoBuffer;
+import org.apache.mina.core.session.IoSession;
+import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.filter.codec.ProtocolDecoder;
+import org.apache.mina.filter.codec.ProtocolDecoderOutput;
+import org.apache.mina.filter.codec.ProtocolEncoder;
+import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 import org.apache.mina.filter.codec.textline.LineDelimiter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
@@ -53,7 +60,8 @@ import com.kkk.netconf.server.ssh.CTcpipServerChannel;
 public class Server implements MessageStore, BehaviourContainer {
 
 	public static final int NETCONF_SERVER_PORT_OFFSET = 1000;
-
+	public static Charset charset = Charset.forName("UTF-8");
+	public static String LINE_DELIMITER = LineDelimiter.NUL.getValue();
 	private static final Log log = LogFactory.getLog(Server.class);
 
 	private static SshServer sshd;
@@ -160,12 +168,57 @@ public class Server implements MessageStore, BehaviourContainer {
 
 	private void initializeNetconfServer(int listeningPort) {
 		NioSocketAcceptor acceptor = new NioSocketAcceptor();
-//		TextLineCodecFactory lineCodec = new TextLineCodecFactory(Charset  
-//	                .forName("UTF-8"), LineDelimiter.WINDOWS.getValue(),  
-//	                LineDelimiter.WINDOWS.getValue());  
-//	        lineCodec.setDecoderMaxLineLength(2*1024*1024);  
-//	        lineCodec.setEncoderMaxLineLength(2*1024*1024);  
-//	        acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(lineCodec));  
+		TextLineCodecFactory lineCodec = new TextLineCodecFactory(charset, " ",  
+			LINE_DELIMITER);
+	        lineCodec.setDecoderMaxLineLength(2*1024*1024);  
+	        lineCodec.setEncoderMaxLineLength(2*1024*1024);  
+	        acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(lineCodec));  
+//	        acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ProtocolCodecFactory() {
+//		    
+//		    @Override
+//		    public ProtocolEncoder getEncoder(IoSession session) throws Exception {
+//			// TODO Auto-generated method stub
+//			return new ProtocolEncoder() {
+//			    
+//			    @Override
+//			    public void encode(IoSession session, Object message, ProtocolEncoderOutput out) throws Exception {
+//				// TODO Auto-generated method stub
+//				
+//			    }
+//			    
+//			    @Override
+//			    public void dispose(IoSession session) throws Exception {
+//				// TODO Auto-generated method stub
+//				
+//			    }
+//			};
+//		    }
+//		    
+//		    @Override
+//		    public ProtocolDecoder getDecoder(IoSession session) throws Exception {
+//			// TODO Auto-generated method stub
+//			return new ProtocolDecoder() {
+//			    
+//			    @Override
+//			    public void finishDecode(IoSession session, ProtocolDecoderOutput out) throws Exception {
+//				// TODO Auto-generated method stub
+//				
+//			    }
+//			    
+//			    @Override
+//			    public void dispose(IoSession session) throws Exception {
+//				// TODO Auto-generated method stub
+//				
+//			    }
+//			    
+//			    @Override
+//			    public void decode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
+//				// TODO Auto-generated method stub
+//				
+//			    }
+//			};
+//		    }
+//		}));  
 		acceptor.getFilterChain().addLast("logger", new LoggingFilter());
 		acceptor.setHandler(new NetconfIoHandler(this, this));
 		acceptor.setReuseAddress(true);

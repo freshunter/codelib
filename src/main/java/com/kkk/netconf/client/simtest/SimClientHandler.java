@@ -26,10 +26,12 @@ public class SimClientHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionOpened(IoSession session) throws Exception {
-	IoBuffer sent = IoBuffer
-	        .wrap("<rpc message-id=\"1\" nodename=\"NTWK-kkktest\"><get-config><source><running/></source><filter type=\"subtree\"><top><object><type>System</type><id/><children><type>CraftUser</type><attr-list>name level passwd admin prev-passwd</attr-list></children></object></top></filter></get-config></rpc>"
-	                .getBytes());
-	session.write(sent);
+	String str = "<rpc message-id=\"1\" nodename=\"NTWK-kkktest\"><get-config><source><running/></source><filter type=\"subtree\"><top><object><type>System</type><id/><children><type>CraftUser</type><attr-list>name level passwd admin prev-passwd</attr-list></children></object></top></filter></get-config></rpc>";
+//	IoBuffer sent = IoBuffer
+//	        .wrap(str
+//	                .getBytes());
+//	session.write(sent);
+	session.write(str);
     }
 
     @Override
@@ -48,20 +50,23 @@ public class SimClientHandler extends IoHandlerAdapter {
 
     @Override
     public void messageReceived(IoSession session, Object message) throws Exception {
-	IoBuffer recv = (IoBuffer) message;
-	IoBuffer sent = IoBuffer.allocate(recv.remaining());
-	String msg = recv.getString(charsetDecoder);
-	log.info("******received msg: " + msg);		
-//	log.info("netconf get hex dump:" + recv.getHexDump());
-//	log.info("netconf get:" + recv.getString(charsetDecoder));
-	
-	sent.put(msg.getBytes(charset));
-	sent.flip();
-	session.write(sent);
+//	IoBuffer recv = (IoBuffer) message;
+//	IoBuffer sent = IoBuffer.allocate(recv.remaining());
+//	String msg = recv.getString(charsetDecoder);
+//	log.info("******received msg: " + msg);		
+////	log.info("netconf get hex dump:" + recv.getHexDump());
+////	log.info("netconf get:" + recv.getString(charsetDecoder));
+//	
+//	sent.put(msg.getBytes(charset));
+//	sent.flip();
+//	session.write(sent);
+
+	log.info("******received msg: " + message.toString());		
+	session.write(message.toString());
     }
     
     @Override
     public void messageSent(IoSession session, Object message) throws Exception {
-	log.info("******sent data: " + ((IoBuffer) message).getString(charsetDecoder));
+	log.info("******sent data: " + message.toString());
     }
 }
