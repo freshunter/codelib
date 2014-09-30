@@ -1,17 +1,12 @@
 package com.kkk.netconf.server.netconf;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import net.i2cat.netconf.messageQueue.MessageQueue;
 import net.i2cat.netconf.messageQueue.MessageQueueListener;
-import net.i2cat.netconf.rpc.Capability;
 import net.i2cat.netconf.rpc.Hello;
 import net.i2cat.netconf.rpc.Operation;
 import net.i2cat.netconf.rpc.Query;
@@ -19,13 +14,9 @@ import net.i2cat.netconf.rpc.RPCElement;
 import net.i2cat.netconf.rpc.Reply;
 import net.i2cat.netconf.rpc.ReplyFactory;
 
-import org.apache.commons.configuration.BaseConfiguration;
-import org.apache.commons.configuration.CompositeConfiguration;
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.sshd.server.ExitCallback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -36,149 +27,50 @@ import com.kkk.netconf.server.BehaviourContainer;
 import com.kkk.netconf.server.MessageStore;
 import com.kkk.netconf.server.transport.ServerTransportContentParser;
 
-/**
- * Netconf client processor
- * 
- * @author Julio Carlos Barrera
- * 
- */
-public class NetconfProcessor implements Runnable, MessageQueueListener {
+public abstract class AbstractNetconfProcessor  implements MessageQueueListener {
 
-	private static final String				END_CHAR_SEQUENCE	= "]]>]]>";
+	protected static final String END_CHAR_SEQUENCE = "]]>]]>";
+	protected Logger log = LoggerFactory.getLogger(getClass());
+	private int messageCounter = 100;
+	private MessageStore messageStore;
+	private BehaviourContainer behaviourContainer;
+	protected Status status;
+	protected XMLReader xmlParser;
+	protected ServerTransportContentParser xmlHandler;
+	protected MessageQueue messageQueue;
+	private Thread messageProcessorThread;
 
-	private static final Log				log					= LogFactory.getLog(NetconfProcessor.class);
+	String							sessionId;
 
-	// message counter
-	private int								messageCounter		= 100;
-
-	// message store
-	private MessageStore					messageStore;
-
-	// behaviors
-	private BehaviourContainer				behaviourContainer;
-
-	// client streams
-	private InputStream						in;
-	public InputStream getIn() {
-		return in;
-	}
-
-	public OutputStream getOut() {
-		return out;
-	}
-
-	private OutputStream					out;
-	private OutputStream					err;
-
-	// callback
-	private ExitCallback					callback;
-
-	// status fields
-	private Status							status;
-
-	private String							sessionId;
-
-	// XML parser & handler
-	private XMLReader						xmlParser;
-	private ServerTransportContentParser	xmlHandler;
-	private MessageQueue					messageQueue;
-
-	// message processor thread
-	private Thread							messageProcessorThread;
+	/**
+		 * Netconf session status
+		 * 
+		 */
+		protected enum Status {
+			INIT(0),
+			HELLO_RECEIVED(1),
+			CLOSING_SESSION(99),
+			SESSION_CLOSED(100);
 	
-	private static int sessionidcount = 1;
+			private int	index;
+	
+			private Status(int index) {
+				this.index = index;
+			}
+	
+			public int getIndex() {
+				return index;
+			}
+		}
 
-	public NetconfProcessor(InputStream in, OutputStream out, OutputStream err, ExitCallback callback) {
-		this.in = in;
-		this.out = out;
-		this.err = err;
-		this.callback = callback;
-	}
-
+		public abstract void send(String xmlMessage) throws IOException;
+			
 	public void setMessageStore(MessageStore messageStore) {
 		this.messageStore = messageStore;
 	}
 
 	public void setBehaviors(BehaviourContainer behaviourContainer) {
 		this.behaviourContainer = behaviourContainer;
-	}
-	
-	synchronized private int raiseSessionIDCount() {
-		return sessionidcount++;
-	}
-
-	@Override
-	public void run() {
-		// initialize XML parser & handler and message queue
-
-		sessionId = "" + raiseSessionIDCount();
-		try {
-			messageQueue = new MessageQueue();
-
-			xmlHandler = new ServerTransportContentParser();
-			xmlHandler.setMessageQueue(messageQueue);
-			messageQueue.addListener(this);
-
-			xmlParser = XMLReaderFactory.createXMLReader();
-			xmlParser.setContentHandler(xmlHandler);
-			xmlParser.setErrorHandler(xmlHandler);
-		} catch (SAXException e) {
-			log.error("Cannot instantiate XML parser", e);
-			return;
-		}
-
-		status = Status.INIT;
-
-//		try {
-//			sendHello();
-//		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-		
-		// start message processor
-		startMessageProcessor();
-		// wait for message processor to continue
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			log.warn("Error waiting for message processor thread.", e);
-		}
-
-		// process messages
-		try {
-			StringBuilder message = new StringBuilder();
-
-			while (status != Status.SESSION_CLOSED) {
-				BufferedReader br = new BufferedReader(new InputStreamReader(in));
-
-				log.debug("Start reading new message...");
-
-				// read message
-				String line;
-				while ((line = br.readLine()) != null) {
-					log.debug("----------kkk----------Line read: '" + line + "'");
-					if (line.endsWith(END_CHAR_SEQUENCE)) {
-						log.trace("Detected end message.");
-						// remove end char sequence from message
-						line = line.replace(END_CHAR_SEQUENCE, "");
-						message.append(line + '\n');
-						// process data
-						process(message.toString());
-						// reset message
-						message.setLength(0);
-					}
-					message.append(line + '\n');
-				}
-				// exit loop if stream closed
-				break;
-			}
-		} catch (Exception e) {
-			log.error("Exception caught in Netconf subsystem", e);
-		} finally {
-			waitAndInterruptThreads();
-			callback.onExit(0);
-		}
 	}
 
 	public void process(final String message) throws IOException, SAXException {
@@ -204,35 +96,35 @@ public class NetconfProcessor implements Runnable, MessageQueueListener {
 		}
 	}
 
-	private void sendHello() throws IOException {
-		// create a server hello message
-/**		CalixHello serverHello = new CalixHello();
-		// generate a random session ID
-		serverHello.setSessionId(sessionId);
-
-		// add only base capability
-		ArrayList<Capability> capabilities = new ArrayList<Capability>();
-		capabilities.add(Capability.BASE);
-		capabilities.add(Capability.WRITABLE_RUNNING);
-		capabilities.add(new CalixCapability("http://calix.com/e7-2/2.3/config"));
-		capabilities.add(new CalixCapability("http://calix.com/e7-2/2.3/stats"));
-		capabilities.add(new CalixCapability("http://calix.com/e7-2/2.3/admin"));
-		serverHello.setCapabilities(capabilities);
-		CompositeConfiguration ctx = new CompositeConfiguration();
-*/
-//		ctx.addProperty("session-id", sessionId);
-//		ctx.addProperty("session-timeout", 1860);
-//		ctx.addProperty("request-timeout", 20);
-		
-//		Configuration cc = new BaseConfiguration();
-//		cc.addProperty("session-id", sessionId);
-//		cc.addProperty("session-timeout", 1860);
-//		cc.addProperty("request-timeout", 20);
-//		ctx.addConfiguration(cc);
-//		serverHello.setCtx(	ctx);
-
-		send(CalixHello.genHello(sessionId).toXML());
-	}
+	protected void sendHello() throws IOException {
+			// create a server hello message
+	/**		CalixHello serverHello = new CalixHello();
+			// generate a random session ID
+			serverHello.setSessionId(sessionId);
+	
+			// add only base capability
+			ArrayList<Capability> capabilities = new ArrayList<Capability>();
+			capabilities.add(Capability.BASE);
+			capabilities.add(Capability.WRITABLE_RUNNING);
+			capabilities.add(new CalixCapability("http://calix.com/e7-2/2.3/config"));
+			capabilities.add(new CalixCapability("http://calix.com/e7-2/2.3/stats"));
+			capabilities.add(new CalixCapability("http://calix.com/e7-2/2.3/admin"));
+			serverHello.setCapabilities(capabilities);
+			CompositeConfiguration ctx = new CompositeConfiguration();
+	*/
+	//		ctx.addProperty("session-id", sessionId);
+	//		ctx.addProperty("session-timeout", 1860);
+	//		ctx.addProperty("request-timeout", 20);
+			
+	//		Configuration cc = new BaseConfiguration();
+	//		cc.addProperty("session-id", sessionId);
+	//		cc.addProperty("session-timeout", 1860);
+	//		cc.addProperty("request-timeout", 20);
+	//		ctx.addConfiguration(cc);
+	//		serverHello.setCtx(	ctx);
+	
+			send(CalixHello.genHello(sessionId).toXML());
+		}
 
 	public void sendFakeConfig(Query configQuery) throws IOException {
 		InputStream configFileIs = this.getClass().getResourceAsStream("/router_configs/router_config_A.xml");
@@ -261,61 +153,52 @@ public class NetconfProcessor implements Runnable, MessageQueueListener {
 		send(reply.toXML());
 	}
 
-	public void send(String xmlMessage) throws IOException {
-		log.trace("Sending message:\n" + xmlMessage);
-		out.write(xmlMessage.getBytes("UTF-8"));
-		// send final sequence
-		out.write((END_CHAR_SEQUENCE + "\n").getBytes("UTF-8"));
-		out.flush();
+	public AbstractNetconfProcessor() {
+		super();
+		try {
+			messageQueue = new MessageQueue();
+
+			xmlHandler = new ServerTransportContentParser();
+			xmlHandler.setMessageQueue(messageQueue);
+			messageQueue.addListener(this);
+
+			xmlParser = XMLReaderFactory.createXMLReader();
+			xmlParser.setContentHandler(xmlHandler);
+			xmlParser.setErrorHandler(xmlHandler);
+		} catch (SAXException e) {
+			log.error("Cannot instantiate XML parser", e);
+			return;
+		}
+		status = Status.INIT;
+		startMessageProcessor();
 	}
 
-	/**
-	 * Netconf session status
-	 * 
-	 */
-	private enum Status {
-		INIT(0),
-		HELLO_RECEIVED(1),
-		CLOSING_SESSION(99),
-		SESSION_CLOSED(100);
-
-		private int	index;
-
-		private Status(int index) {
-			this.index = index;
-		}
-
-		public int getIndex() {
-			return index;
-		}
-	}
-
-	private void startMessageProcessor() {
+	protected void startMessageProcessor() {
 		log.info("Creating new message processor...");
 		messageProcessorThread = new Thread("Message processor") {
 			@Override
 			public void run() {
 				while (status.getIndex() < Status.SESSION_CLOSED.getIndex()) {
-
+	
 					RPCElement message = messageQueue.blockingConsume();
 					
 					if(message == null) {
 						continue;
 					}
-
+	
 					log.trace("Message body:\n" + message.toXML() + '\n');
-
+	
 					// store message if necessary
 					if (messageStore != null) {
 						messageStore.storeMessage(message);
 					}
-
+	
 					// avoid message processing when session is already closed
 					if (status == Status.SESSION_CLOSED) {
 						log.warn("Session is closing or is already closed, message will not be processed");
 						return;
 					}
-
+	
 					// process message
 					try {
 						// user defined behaviours
@@ -344,7 +227,7 @@ public class NetconfProcessor implements Runnable, MessageQueueListener {
 								}
 							}
 						}
-
+	
 						// default message processing
 						if (message instanceof Hello) {
 							if (status.getIndex() < Status.HELLO_RECEIVED.getIndex()) {
@@ -360,7 +243,7 @@ public class NetconfProcessor implements Runnable, MessageQueueListener {
 						} else if (message instanceof Query) {
 							Query query = (Query) message;
 							Operation operation = query.getOperation();
-
+	
 							if (operation.equals(Operation.CLOSE_SESSION)) {
 								log.info("Close-session received.");
 								status = Status.CLOSING_SESSION;
@@ -415,7 +298,7 @@ public class NetconfProcessor implements Runnable, MessageQueueListener {
 		} catch (InterruptedException e) {
 			log.error("Error waiting for thread end", e);
 		}
-
+	
 		// kill thread if it don't finish naturally
 		if (messageProcessorThread != null && messageProcessorThread.isAlive()) {
 			log.debug("Killing message processor thread");
@@ -427,4 +310,5 @@ public class NetconfProcessor implements Runnable, MessageQueueListener {
 	public void receiveRPCElement(RPCElement element) {
 		log.info("------kkk----------Message received");
 	}
+
 }

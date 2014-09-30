@@ -29,7 +29,7 @@ import org.apache.sshd.common.util.Buffer;
 import org.apache.sshd.common.util.CloseableUtils;
 import org.apache.sshd.common.util.Readable;
 
-import com.kkk.netconf.server.netconf.NetconfProcessor;
+import com.kkk.netconf.server.netconf.SessionChannelNetconfProcessor;
 
 public class CTcpipForwarder extends CloseableUtils.AbstractInnerCloseable implements TcpipForwarder, IoHandler {
 

@@ -38,7 +38,7 @@ public class NetconfSubsystem implements Command, SessionAware {
 	private MessageStore		messageStore;
 	private BehaviourContainer	behaviourContainer	= null;
 
-	private NetconfProcessor	netconfProcessor;
+	private SessionChannelNetconfProcessor	netconfProcessor;
 	
 	private static NetconfSubsystem ns;
 	
@@ -53,7 +53,7 @@ public class NetconfSubsystem implements Command, SessionAware {
 		return ns;
 	}
 	
-	public NetconfProcessor getNetconfProcessor() {
+	public AbstractNetconfProcessor getNetconfProcessor() {
 		return netconfProcessor;
 	}
 
@@ -101,12 +101,12 @@ public class NetconfSubsystem implements Command, SessionAware {
 		this.env = env;
 
 		// initialize Netconf processor
-		netconfProcessor = new NetconfProcessor(in, out, err, callback);
+		netconfProcessor = new SessionChannelNetconfProcessor(in, out, err, callback);
 		netconfProcessor.setMessageStore(messageStore);
 		netconfProcessor.setBehaviors(behaviourContainer);
 
-		log.info("Starting new client thread...===================");
-		(clientThread = new Thread(netconfProcessor, "Client thread")).start();
+		log.info("Starting session client thread...");
+		(clientThread = new Thread(netconfProcessor, "Session client thread")).start();
 	}
 
 	@Override
@@ -149,7 +149,8 @@ public class NetconfSubsystem implements Command, SessionAware {
 
 		public Command create() {
 			log.info("Creating Netconf Subsystem Factory");
-			return NetconfSubsystem.getInstance(messageStore, behaviourContainer);
+			return new NetconfSubsystem(messageStore, behaviourContainer);
+//			return NetconfSubsystem.getInstance(messageStore, behaviourContainer);
 		}
 
 		public String getName() {
