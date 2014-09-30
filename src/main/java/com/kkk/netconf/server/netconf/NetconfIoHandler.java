@@ -70,27 +70,20 @@ public class NetconfIoHandler extends IoHandlerAdapter{
     }
 
     public void messageReceived(IoSession session, Object message) throws Exception {
-		log.info("netconf sim get data: " + message);
 		IoBuffer recv = (IoBuffer) message;
 		IoBuffer sent = IoBuffer.allocate(recv.remaining());
+		String msg = recv.getString(charsetDecoder);
+		log.info("******received data from client[netconf sim]:" + msg);
 //		log.info("netconf get hex dump:" + recv.getHexDump());
 //		log.info("netconf get:" + recv.getString(charsetDecoder));
 		
-//		netconfProcessor.process(recv.getString(charsetDecoder));
-		
-//      NetconfProcessor netconfProcessor = new NetconfProcessor(getService(), out, err, callback);
-//		netconfProcessor.setMessageStore(messageStore);
-//		netconfProcessor.setBehaviors(behaviourContainer);
-
-//		log.info("Starting new client thread...===================");
-//		(new Thread(netconfProcessor, "Direct-tcpip Client thread")).start();
-		sent.put(recv);
+		sent.put(msg.getBytes(charset));
 		sent.flip();
 		session.write(sent);
     }
 
     public void messageSent(IoSession session, Object message) throws Exception {
-    	log.info("netconf sim sent data: " + message);
+    	log.info("******sent data to client[netconf sim]:" + ((IoBuffer)message).getString(charsetDecoder));
     }
 
 }

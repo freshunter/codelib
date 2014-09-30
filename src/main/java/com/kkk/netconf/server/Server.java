@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,6 +14,10 @@ import net.i2cat.netconf.rpc.RPCElement;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.filter.codec.textline.LineDelimiter;
+import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
+import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.common.Channel;
@@ -155,10 +160,18 @@ public class Server implements MessageStore, BehaviourContainer {
 
 	private void initializeNetconfServer(int listeningPort) {
 		NioSocketAcceptor acceptor = new NioSocketAcceptor();
+//		TextLineCodecFactory lineCodec = new TextLineCodecFactory(Charset  
+//	                .forName("UTF-8"), LineDelimiter.WINDOWS.getValue(),  
+//	                LineDelimiter.WINDOWS.getValue());  
+//	        lineCodec.setDecoderMaxLineLength(2*1024*1024);  
+//	        lineCodec.setEncoderMaxLineLength(2*1024*1024);  
+//	        acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(lineCodec));  
+		acceptor.getFilterChain().addLast("logger", new LoggingFilter());
 		acceptor.setHandler(new NetconfIoHandler(this, this));
 		acceptor.setReuseAddress(true);
 		acceptor.setDefaultLocalAddress(new InetSocketAddress(listeningPort));
-		this.acceptor = acceptor;		
+		this.acceptor = acceptor;
+		log.info("Netconf Server listenig port: " + listeningPort);
 	}
 
 	private void initializeServer(String host, int listeningPort) {
@@ -167,7 +180,7 @@ public class Server implements MessageStore, BehaviourContainer {
 		sshd.setHost(host);
 		sshd.setPort(listeningPort);
 
-		log.info("Host: '" + host + "', listenig port: " + listeningPort);
+		log.info("SSH Host: '" + host + "', listenig port: " + listeningPort);
 
 		sshd.setPasswordAuthenticator(new AlwaysTruePasswordAuthenticator());
 		sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(

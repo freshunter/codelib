@@ -119,8 +119,8 @@ public class CTcpipServerChannel<K>  extends AbstractServerChannel {
                 } else {
                     Buffer buffer = new Buffer();
                     buffer.putBuffer(message);
-                    log.info("======receive message from Netconf sim byte:" + buffer.array());
-                    log.info("======receive message from Netconf sim string:" + new String(buffer.getCompactData()));
+//                    log.info("======receive message from Netconf sim byte:" + buffer.array());
+                    log.info("======Southbound. Received message from Netconf sim string:" + new String(buffer.getCompactData()));
 
                     out.write(buffer.array(), buffer.rpos(), buffer.available());
                     out.flush();
@@ -176,9 +176,9 @@ public class CTcpipServerChannel<K>  extends AbstractServerChannel {
             throw new IllegalStateException("Bad item length: " + len);
         }
         log.debug("=====Received SSH_MSG_CHANNEL_DATA on channel {}", this);
-        log.debug("=====Received channel data: {}", BufferUtils.printHex(buffer.array(), buffer.rpos(), len));
+//        log.debug("=====Received channel data: {}", BufferUtils.printHex(buffer.array(), buffer.rpos(), len));
 //        log.info("======Received data:" + new String(buffer.array()));
-        log.info("======Received data from ssh client:" + new String(buffer.getCompactData()));
+        log.info("======Northbound. Received data from ssh client:" + new String(buffer.getCompactData()));
 //        log.info("======Received data:" + buffer.getString());
         if (log.isTraceEnabled()) {
             log.trace("Received channel data: {}", BufferUtils.printHex(buffer.array(), buffer.rpos(), len));
