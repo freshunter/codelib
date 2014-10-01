@@ -20,6 +20,7 @@ XML:
 		</filter>
 	</get-config>
 </rpc>
+
 2014-09-19 17:14:08,641 [DEBUG netconf] - Southbound Netconf Response
 XML:
 <rpc-reply length="000353" message-id="1" nodename="NTWK-10.245.6.12">
