@@ -29,7 +29,7 @@ import com.kkk.netconf.server.transport.ServerTransportContentParser;
 
 public abstract class AbstractNetconfProcessor  implements MessageQueueListener {
 
-	protected static final String END_CHAR_SEQUENCE = "]]>]]>";
+	static final String END_CHAR_SEQUENCE = "]]>]]>";
 	protected Logger log = LoggerFactory.getLogger(getClass());
 	private int messageCounter = 100;
 	private MessageStore messageStore;

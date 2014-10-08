@@ -64,6 +64,9 @@ public class NetconfIoHandler extends IoHandlerAdapter {
 
     public void messageReceived(IoSession session, Object message) throws Exception {
 	log.trace("******received data from client[netconf sim]:" + message.toString().trim());
+	
+//	netconfProcessor.process(message.toString().trim());
+	
 	session.write(message.toString().trim());
     }
 

@@ -1,25 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.i2cat</groupId>
+	<groupId>com.kkk</groupId>
 	<artifactId>netconf-server</artifactId>
 	<version>0.0.3</version>
 	<packaging>bundle</packaging>
 	<name>Netconf Server</name>
 
-	<url>http://www.i2cat.net</url>
 	<description>Netconf Server</description>
-	<organization>
-		<name>Fundació Privada i2CAT, Internet i Innovació a Catalunya</name>
-		<url>http://www.i2cat.net/en</url>
-	</organization>
-
-	<licenses>
-		<license>
-			<name>GNU Lesser General Public License 3</name>
-			<url>http://www.gnu.org/licenses/lgpl-3.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -27,7 +14,7 @@
 		<!-- dependencies versions -->
 		<netconf4j.version>0.0.7</netconf4j.version>
 		<pax-logging.version>1.6.10</pax-logging.version>
-		<commons-io.version>1.4</commons-io.version>
+		<commons-io.version>2.4</commons-io.version>
 		<sshd.version>0.12.0</sshd.version>
 		<junit.version>4.10</junit.version>
 	</properties>
