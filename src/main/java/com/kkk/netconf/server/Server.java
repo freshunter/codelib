@@ -388,7 +388,7 @@ public class Server implements MessageStore, BehaviourContainer {
 		server.startServer();
 		
 		NetconfLogFile.getInstance().importMsg("kkk.txt");
-//		nf.StudyNetconfMsg("netconfLogFile.txt");
+		NetconfLogFile.getInstance().StudyNetconfMsg("netconfLogFile.txt");
 
 		// read lines form input
 		BufferedReader buffer = new BufferedReader(new InputStreamReader(

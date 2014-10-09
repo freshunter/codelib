@@ -3,9 +3,8 @@ package com.kkk.netconf.server.behaviour;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +62,6 @@ public class NetconfLogFile {
     }
 
     public void StudyNetconfMsg(String file) {
-	log.info("study msg from log file:" + file);
 	this.StudyNetconfMsg(new File(file));
     }
 
@@ -151,6 +149,12 @@ public class NetconfLogFile {
 	    if (nm.isResponse()) {
 		response.put(nm.getResponseKey(), nm);
 	    } else {
+		if(request.containsKey(nm.getMd5())) {
+		    if(response.containsKey(request.get(nm.getMd5()).getResponseKey())) {
+			//if already have pair, not cover.
+			continue;
+		    }
+		}
 		request.put(nm.getMd5(), nm);
 	    }
 	}
@@ -189,5 +193,14 @@ public class NetconfLogFile {
 	nf.StudyNetconfMsg("netconfLogFile.txt");
 	nf.exportMsg("kkk.txt");
      }
+
+    public void writeLog(String str) {
+	try {
+	    FileUtils.writeLines(new File("unsupport.txt"), Server.CHARSET.toString(), Arrays.asList(new String[]{str}), true);
+        } catch (IOException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+        }
+    }
 
 }

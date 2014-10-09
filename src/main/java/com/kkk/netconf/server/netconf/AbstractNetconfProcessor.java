@@ -1,5 +1,6 @@
 package com.kkk.netconf.server.netconf;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -14,6 +15,7 @@ import net.i2cat.netconf.rpc.RPCElement;
 import net.i2cat.netconf.rpc.Reply;
 import net.i2cat.netconf.rpc.ReplyFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +27,14 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import com.kkk.netconf.server.Behaviour;
 import com.kkk.netconf.server.BehaviourContainer;
 import com.kkk.netconf.server.MessageStore;
+import com.kkk.netconf.server.Server;
 import com.kkk.netconf.server.behaviour.NetconfLogFile;
 import com.kkk.netconf.server.behaviour.NetconfMsg;
 import com.kkk.netconf.server.transport.ServerTransportContentParser;
 
 public abstract class AbstractNetconfProcessor implements MessageQueueListener {
     public static final String PING_MSG = "<hello type=\"cms\"></hello>";
+    public static final String PING_MSG_RESPONSE = "<hello type=\"cms\"></hello>";
     protected Logger log = LoggerFactory.getLogger(getClass());
     private int messageCounter = 100;
     private MessageStore messageStore;
@@ -77,6 +81,7 @@ public abstract class AbstractNetconfProcessor implements MessageQueueListener {
 	if(message.startsWith("<hello")) {
 	    if(message.equals(PING_MSG)) {
 		//do nothing.
+		send(PING_MSG_RESPONSE);
 		return;
 	    }
 	    int index = message.indexOf(">");
@@ -93,11 +98,13 @@ public abstract class AbstractNetconfProcessor implements MessageQueueListener {
 	if (req == null) {
 	    log.warn("---------------not support this request:");
 	    log.warn(message);
+	    nfb.writeLog("[unsupport]" + message);
 	} else {
 	    NetconfMsg res = nfb.getResponse(req.getResponseKey());
 	    if (res == null) {
 		log.warn("---------------only have request, not have response in the map:");
 		log.warn(message);
+		    nfb.writeLog("[noResponse]" + message);
 	    } else {
 		send(res.genResponseMessage(nm.getNodeName(), nm.getMessageId()));
 	    }
