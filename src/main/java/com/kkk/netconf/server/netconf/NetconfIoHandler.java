@@ -23,7 +23,7 @@ public class NetconfIoHandler extends IoHandlerAdapter {
     private AbstractNetconfProcessor netconfProcessor;
 
     private static final Logger log = LoggerFactory.getLogger(IoHandlerAdapter.class);
-    private Charset charset = Server.charset;
+    private Charset charset = Server.CHARSET;
     private CharsetEncoder charsetEncoder = charset.newEncoder();
     private CharsetDecoder charsetDecoder = charset.newDecoder();
 

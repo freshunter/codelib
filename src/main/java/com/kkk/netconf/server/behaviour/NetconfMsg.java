@@ -7,6 +7,7 @@ import ch.ethz.ssh2.crypto.Base64;
 
 public class NetconfMsg {
     static final int LEN_STR_LEN = 6;
+    static final int REPLY_HEAD_STR_LEN = 53;
     static MessageDigest md;
     static {
 	try {
@@ -26,11 +27,11 @@ public class NetconfMsg {
     private int length;
     private boolean isResponse = false;
 
-    public NetconfMsg(String name, String mi, String msg, boolean b) {
+    public NetconfMsg(String name, String mi, String msg) {
 	setNodeName(name);
 	setMessageId(mi);
 	setMessage(msg);
-	setResponse(b);
+	setResponse(msg.startsWith("<rpc-reply"));
     }
 
     public String genResponseMessage(String name, String messageid) {
@@ -45,7 +46,8 @@ public class NetconfMsg {
     }
     
     private String genLength(String name, String messageid) {
-	int len = this.length + getDiffer(name, messageid);
+//	int len = this.length + getDiffer(name, messageid);
+	int len = this.messageBodyNoHead.length() + REPLY_HEAD_STR_LEN + name.length() + messageid.length();
 	String lenStr = Integer.toString(len);
 	for (int i = LEN_STR_LEN, l = lenStr.length(); i > l ; i--) {
 	    lenStr = "0" + lenStr;
@@ -136,10 +138,8 @@ public class NetconfMsg {
         return length;
     }
     
-//    public static void main(String[] args) throws NoSuchAlgorithmException {
-//	MessageDigest md = MessageDigest.getInstance("MD5");
-//	
-//	md.digest(input)
-//    }
+    public static void main(String[] args) throws NoSuchAlgorithmException {
+	System.out.println("<rpc-reply length=\"000346\" message-id=\"\" nodename=\"\">".length());
+    }
 
 }

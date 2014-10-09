@@ -124,7 +124,7 @@ public class CTcpipServerChannel<K>  extends AbstractServerChannel {
                     log.info("======Southboundssh:" + msg);
 
 //                    out.write(buffer.array(), buffer.rpos(), buffer.available());
-                    out.write(msg.getBytes(Server.charset));
+                    out.write(msg.getBytes(Server.CHARSET));
                     out.flush();
                 }
             }
@@ -188,7 +188,7 @@ public class CTcpipServerChannel<K>  extends AbstractServerChannel {
         doWriteData(buffer.array(), buffer.rpos(), len);
         
         //send a end delimiter, then make sure sim server could get the whole msg once.
-        byte[] end = Server.LINE_DELIMITER.getBytes(Server.charset);
+        byte[] end = Server.LINE_DELIMITER.getBytes(Server.CHARSET);
         doWriteData(end, 0, end.length);
     }
 

@@ -60,7 +60,7 @@ import com.kkk.netconf.server.ssh.CTcpipServerChannel;
 public class Server implements MessageStore, BehaviourContainer {
 
 	public static final int NETCONF_SERVER_PORT_OFFSET = 1000;
-	public static Charset charset = Charset.forName("UTF-8");
+	public static Charset CHARSET = Charset.forName("UTF-8");
 	public static String LINE_DELIMITER = LineDelimiter.NUL.getValue();
 	private static final Log log = LogFactory.getLog(Server.class);
 
@@ -168,7 +168,7 @@ public class Server implements MessageStore, BehaviourContainer {
 
 	private void initializeNetconfServer(int listeningPort) {
 		NioSocketAcceptor acceptor = new NioSocketAcceptor();
-		TextLineCodecFactory lineCodec = new TextLineCodecFactory(charset, LINE_DELIMITER,  
+		TextLineCodecFactory lineCodec = new TextLineCodecFactory(CHARSET, LINE_DELIMITER,  
 			LINE_DELIMITER);
 	        lineCodec.setDecoderMaxLineLength(2*1024*1024);  
 	        lineCodec.setEncoderMaxLineLength(2*1024*1024);  
