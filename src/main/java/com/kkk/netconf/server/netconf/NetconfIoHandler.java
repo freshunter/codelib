@@ -62,12 +62,12 @@ public class NetconfIoHandler extends IoHandlerAdapter {
 	}
     }
 
+    //the first msg:
+    //<hello xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" type="cms" vers="13.01.117" local-ip-addr="10.245.15.151"/><rpc message-id="1" nodename="NTWK-kkktest"><get-config><source><running/></source><filter type="subtree"><top><object><type>System</type><id/><children><type>CraftUser</type><attr-list>name level passwd admin prev-passwd</attr-list></children></object></top></filter></get-config></rpc>
     public void messageReceived(IoSession session, Object message) throws Exception {
 	log.trace("******received data from client[netconf sim]:" + message.toString().trim());
-	
-//	netconfProcessor.process(message.toString().trim());
-	
-	session.write(message.toString().trim());
+	netconfProcessor.processCms(message.toString().trim());
+//	session.write(message.toString().trim());
     }
 
     public void messageSent(IoSession session, Object message) throws Exception {

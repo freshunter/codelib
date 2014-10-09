@@ -40,6 +40,7 @@ import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerConnectionService;
 import org.apache.sshd.server.session.ServerUserAuthService;
 
+import com.kkk.netconf.server.behaviour.NetconfLogFile;
 import com.kkk.netconf.server.exceptions.ServerException;
 import com.kkk.netconf.server.netconf.NetconfIoHandler;
 import com.kkk.netconf.server.netconf.NetconfSubsystem;
@@ -381,10 +382,13 @@ public class Server implements MessageStore, BehaviourContainer {
 	public static void main(String[] args) throws IOException {
 
 		System.setProperty("org.apache.commons.logging.simplelog.defaultlog",
-				"trace");
+				"warn");
 
 		Server server = Server.createServerStoringMessages(830);
 		server.startServer();
+		
+		NetconfLogFile.getInstance().importMsg("kkk.txt");
+//		nf.StudyNetconfMsg("netconfLogFile.txt");
 
 		// read lines form input
 		BufferedReader buffer = new BufferedReader(new InputStreamReader(

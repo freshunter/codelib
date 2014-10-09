@@ -24,9 +24,9 @@ public class TcpipForwardNetconfProcessor  extends AbstractNetconfProcessor{
 		this.sessionId = Long.toString(session.getId());
 	}
 
-	public void send(String xmlMessage) throws IOException {
-		log.info("Sending message:\n" + xmlMessage);
-		IoBuffer message = IoBuffer.wrap(xmlMessage.getBytes("UTF-8"));
+	public void send(String reply) throws IOException {
+		log.info("Sending message:\n" + reply);
+		IoBuffer message = IoBuffer.wrap(reply.getBytes("UTF-8"));
 		session.write(message);
 	}
 	

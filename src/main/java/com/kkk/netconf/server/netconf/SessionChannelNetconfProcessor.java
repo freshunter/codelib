@@ -12,6 +12,7 @@ import org.apache.sshd.server.ExitCallback;
 
 public class SessionChannelNetconfProcessor  extends AbstractNetconfProcessor implements Runnable{
 
+	static final String END_CHAR_SEQUENCE = "]]>]]>";
 	// client streams
 	private InputStream						in;
 	public InputStream getIn() {
@@ -80,7 +81,7 @@ public class SessionChannelNetconfProcessor  extends AbstractNetconfProcessor im
 						line = line.replace(END_CHAR_SEQUENCE, "");
 						message.append(line + '\n');
 						// process data
-						process(message.toString());
+						processCms(message.toString());
 						// reset message
 						message.setLength(0);
 					}

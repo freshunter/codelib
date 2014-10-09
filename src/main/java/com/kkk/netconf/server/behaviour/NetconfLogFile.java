@@ -16,6 +16,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -26,6 +28,7 @@ import com.kkk.netconf.server.Server;
 public class NetconfLogFile {
     static final String REQUEST = "Southbound Netconf Request XML:";
     static final String RESPONSE = "Southbound Netconf Response XML:";
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
     // File file;
 
@@ -39,6 +42,18 @@ public class NetconfLogFile {
 
     public static NetconfLogFile instance = null;
 
+    public NetconfMsg getRequest(String md5) {
+        return request.get(md5);
+    }
+
+    public NetconfMsg getResponseByRequest(String md5) {
+        return response.get(request.get(md5).getResponseKey());
+    }
+
+    public NetconfMsg getResponse(String key) {
+        return response.get(key);
+    }
+
     //
     public synchronized static NetconfLogFile getInstance() {
 	if (instance == null) {
@@ -48,6 +63,7 @@ public class NetconfLogFile {
     }
 
     public void StudyNetconfMsg(String file) {
+	log.info("study msg from log file:" + file);
 	this.StudyNetconfMsg(new File(file));
     }
 
@@ -62,6 +78,7 @@ public class NetconfLogFile {
     }
 
     public boolean exportMsg(String file) {
+	log.info("export msg to file:" + file);
 	List<String> l = new ArrayList<String>();
 	l.add("#---Note when importting: one line one message. Reply and response message-id and nodename right by pair.");
 	for (NetconfMsg nm : allMsg) {
@@ -78,6 +95,7 @@ public class NetconfLogFile {
     }
 
     public void importMsg(String file) {
+	log.info("import msg from file:" + file);
 	allMsg.clear();
 	LineIterator it = null;
 	try {
@@ -98,6 +116,7 @@ public class NetconfLogFile {
     }
 
     public void StudyNetconfMsg(File file) {
+	log.info("study msg from log file:" + file);
 	LineIterator it = null;
 	try {
 	    it = FileUtils.lineIterator(file, Server.CHARSET.toString());
@@ -137,7 +156,7 @@ public class NetconfLogFile {
 	}
     }
 
-    private NetconfMsg procMsg(String msg) {
+    public NetconfMsg procMsg(String msg) {
 	NetconfMsg nm = null;
 	try {
 	    Document doc = builder.parse(new InputSource(new StringReader(msg)));
