@@ -13,7 +13,8 @@
 		<java.version>1.7</java.version>
 		<!-- dependencies versions -->
 		<netconf4j.version>0.0.7</netconf4j.version>
-		<pax-logging.version>1.6.10</pax-logging.version>
+		<pax-logging.version>1.7.4</pax-logging.version>
+		<org.slf4j.version>1.7.7</org.slf4j.version>
 		<commons-io.version>2.4</commons-io.version>
 		<sshd.version>0.12.0</sshd.version>
 		<junit.version>4.10</junit.version>
@@ -28,11 +29,16 @@
 		</dependency>
 
 		<!-- Pax logging -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.ops4j.pax.logging</groupId>
 			<artifactId>pax-logging-api</artifactId>
 			<version>${pax-logging.version}</version>
-		</dependency>
+		</dependency> -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+			<version>${org.slf4j.version}</version>
+        </dependency>
 
 		<!-- Apache SSHD -->
 		<dependency>

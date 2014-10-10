@@ -25,7 +25,7 @@ public class TcpipForwardNetconfProcessor  extends AbstractNetconfProcessor{
 	}
 
 	public void send(String reply) throws IOException {
-		log.info("Sending message:\n" + reply);
+		log.debug("Sending message:\n" + reply);
 		IoBuffer message = IoBuffer.wrap(reply.getBytes("UTF-8"));
 		session.write(message);
 	}

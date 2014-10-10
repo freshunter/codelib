@@ -121,7 +121,7 @@ public class CTcpipServerChannel<K>  extends AbstractServerChannel {
                     buffer.putBuffer(message);
 //                    log.info("======receive message from Netconf sim byte:" + buffer.array());
                     String msg = new String(buffer.getCompactData()).trim();
-                    log.info("======Southboundssh:" + msg);
+                    log.debug("======Southboundssh:" + msg);
 
 //                    out.write(buffer.array(), buffer.rpos(), buffer.available());
                     out.write(msg.getBytes(Server.CHARSET));
@@ -180,7 +180,7 @@ public class CTcpipServerChannel<K>  extends AbstractServerChannel {
         log.debug("Received SSH_MSG_CHANNEL_DATA on channel {}", this);
 //        log.debug("=====Received channel data: {}", BufferUtils.printHex(buffer.array(), buffer.rpos(), len));
 //        log.info("======Received data:" + new String(buffer.array()));
-        log.info("======Northboundssh:" + new String(buffer.getCompactData()));
+        log.debug("======Northboundssh:" + new String(buffer.getCompactData()));
 //        log.info("======Received data:" + buffer.getString());
         if (log.isTraceEnabled()) {
             log.trace("Received channel data: {}", BufferUtils.printHex(buffer.array(), buffer.rpos(), len));

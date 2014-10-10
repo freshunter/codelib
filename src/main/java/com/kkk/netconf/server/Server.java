@@ -14,14 +14,7 @@ import net.i2cat.netconf.rpc.RPCElement;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.mina.core.buffer.IoBuffer;
-import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.codec.ProtocolDecoder;
-import org.apache.mina.filter.codec.ProtocolDecoderOutput;
-import org.apache.mina.filter.codec.ProtocolEncoder;
-import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 import org.apache.mina.filter.codec.textline.LineDelimiter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
@@ -220,10 +213,10 @@ public class Server implements MessageStore, BehaviourContainer {
 //			};
 //		    }
 //		}));  
-		acceptor.getFilterChain().addLast("logger", new LoggingFilter());
 		acceptor.setHandler(new NetconfIoHandler(this, this));
 		acceptor.setReuseAddress(true);
 		acceptor.setDefaultLocalAddress(new InetSocketAddress(listeningPort));
+		acceptor.getFilterChain().addLast("logger", new LoggingFilter());
 		this.acceptor = acceptor;
 		log.info("Netconf Server listenig port: " + listeningPort);
 	}
@@ -383,7 +376,7 @@ public class Server implements MessageStore, BehaviourContainer {
 
 		System.setProperty("org.apache.commons.logging.simplelog.defaultlog",
 				"warn");
-
+		
 		Server server = Server.createServerStoringMessages(830);
 		server.startServer();
 		
