@@ -13,6 +13,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * 
+ * @author khuang
+ *
+ */
 public class NetconfLogFileTest {
     NetconfLogFile nf;
     String str1 = "<rpc message-id=\"33\" nodename=\"NTWK-kkk\"><action><action-type>test</action-type></action></rpc>";

@@ -11,6 +11,11 @@ import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * @author khuang
+ *
+ */
 public class SimClientHandler extends IoHandlerAdapter {
     private Logger log = LoggerFactory.getLogger(getClass());
     private Charset charset = Charset.forName("UTF-8");

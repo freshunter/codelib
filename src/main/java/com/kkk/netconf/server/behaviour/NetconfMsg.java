@@ -5,6 +5,11 @@ import java.security.NoSuchAlgorithmException;
 
 import ch.ethz.ssh2.crypto.Base64;
 
+/**
+ * 
+ * @author khuang
+ *
+ */
 public class NetconfMsg {
     static final int LEN_STR_LEN = 6;
     static final int REPLY_HEAD_STR_LEN = 53;

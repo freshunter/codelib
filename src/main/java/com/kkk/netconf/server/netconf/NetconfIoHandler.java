@@ -16,6 +16,11 @@ import com.kkk.netconf.server.BehaviourContainer;
 import com.kkk.netconf.server.MessageStore;
 import com.kkk.netconf.server.Server;
 
+/**
+ * 
+ * @author khuang
+ *
+ */
 public class NetconfIoHandler extends IoHandlerAdapter {
 
     private MessageStore messageStore = null;

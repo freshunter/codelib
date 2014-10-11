@@ -8,7 +8,6 @@ import java.util.List;
 
 import net.i2cat.netconf.messageQueue.MessageQueue;
 import net.i2cat.netconf.messageQueue.MessageQueueListener;
-import net.i2cat.netconf.rpc.Hello;
 import net.i2cat.netconf.rpc.Operation;
 import net.i2cat.netconf.rpc.Query;
 import net.i2cat.netconf.rpc.RPCElement;
@@ -32,6 +31,11 @@ import com.kkk.netconf.server.behaviour.NetconfLogFile;
 import com.kkk.netconf.server.behaviour.NetconfMsg;
 import com.kkk.netconf.server.transport.ServerTransportContentParser;
 
+/**
+ * 
+ * @author khuang
+ *
+ */
 public abstract class AbstractNetconfProcessor implements MessageQueueListener {
     public static final String PING_MSG = "<hello type=\"cms\"></hello>";
     public static final String PING_MSG_RESPONSE = "<hello type=\"cms\"></hello>";
@@ -162,7 +166,7 @@ public abstract class AbstractNetconfProcessor implements MessageQueueListener {
 	// ctx.addConfiguration(cc);
 	// serverHello.setCtx( ctx);
 
-	send(CalixHello.genHello(sessionId).toXML());
+	send(Hello.genHello(sessionId).toXML());
     }
 
     public void sendFakeConfig(Query configQuery) throws IOException {

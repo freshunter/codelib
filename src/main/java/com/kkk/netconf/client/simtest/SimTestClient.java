@@ -10,6 +10,11 @@ import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
+/**
+ * 
+ * @author khuang
+ *
+ */
 public class SimTestClient {
 
     public static void main(String[] args) {

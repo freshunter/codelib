@@ -13,7 +13,11 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.kkk.netconf.server.transport.ServerTransportContentParser;
 
-
+/**
+ * 
+ * @author khuang
+ *
+ */
 public class TcpipForwardNetconfProcessor  extends AbstractNetconfProcessor{
 
 	private IoSession session;

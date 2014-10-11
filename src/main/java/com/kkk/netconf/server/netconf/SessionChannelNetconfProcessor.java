@@ -9,7 +9,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.sshd.server.ExitCallback;
 
-
+/**
+ * 
+ * @author khuang
+ *
+ */
 public class SessionChannelNetconfProcessor  extends AbstractNetconfProcessor implements Runnable{
 
 	static final String END_CHAR_SEQUENCE = "]]>]]>";

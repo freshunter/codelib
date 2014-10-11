@@ -30,8 +30,14 @@ import org.apache.sshd.server.channel.ChannelSession;
 import org.apache.sshd.server.channel.OpenChannelException;
 
 import com.kkk.netconf.server.Server;
-import com.kkk.netconf.server.netconf.CalixHello;
+import com.kkk.netconf.server.netconf.Hello;
 
+/**
+ * 
+ * @author khuang
+ *
+ * @param <K>
+ */
 public class CTcpipServerChannel<K>  extends AbstractServerChannel {
 
     public static class DirectTcpipFactory implements NamedFactory<Channel> {

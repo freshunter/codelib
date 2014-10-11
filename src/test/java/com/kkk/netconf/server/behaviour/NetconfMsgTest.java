@@ -11,6 +11,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * 
+ * @author khuang
+ *
+ */
 public class NetconfMsgTest {
     NetconfLogFile nf;
 

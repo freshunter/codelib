@@ -24,6 +24,11 @@ import org.xml.sax.SAXException;
 
 import com.kkk.netconf.server.Server;
 
+/**
+ * 
+ * @author khuang
+ *
+ */
 public class NetconfLogFile {
     static final String REQUEST = "Southbound Netconf Request XML:";
     static final String RESPONSE = "Southbound Netconf Response XML:";

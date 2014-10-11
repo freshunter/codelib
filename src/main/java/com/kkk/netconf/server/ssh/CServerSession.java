@@ -5,6 +5,11 @@ import org.apache.sshd.common.util.Buffer;
 import org.apache.sshd.server.ServerFactoryManager;
 import org.apache.sshd.server.session.ServerSession;
 
+/**
+ * 
+ * @author khuang
+ *
+ */
 public class CServerSession extends ServerSession {
     public CServerSession(ServerFactoryManager server, IoSession ioSession) throws Exception {
         super(server, ioSession);

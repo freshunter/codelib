@@ -31,6 +31,11 @@ import org.apache.sshd.common.util.Readable;
 
 import com.kkk.netconf.server.netconf.SessionChannelNetconfProcessor;
 
+/**
+ * 
+ * @author khuang
+ *
+ */
 public class CTcpipForwarder extends CloseableUtils.AbstractInnerCloseable implements TcpipForwarder, IoHandler {
 
 //	private static final Log log = LogFactory.getLog(CalixTcpipForwarder.class);
